@@ -29,7 +29,7 @@ class AlertsController < ApplicationController
   def notifications
     if request.xhr?
       date = DateTime.current
-      @notifications_count = Alert.where(created_at: date.beginning_of_day..date.end_of_day).count
+      @notifications_count = Alert.where(created_at: date.beginning_of_day..date.end_of_day)
       render :partial => "ajax"
     end
   end

@@ -1,9 +1,14 @@
 <div id="notificationsContainer">
 	<div id="notificationsBody" class="notifications">
-		<%= @notifications_count %>
+		<% @notifications_count.each do |notification| %>
+
+		<p>
+			<%= link_to_issue notification.issue %> : Retard de <%= distance_of_time_in_words( (notification.end_time || Time.now)  - notification.begin_time ) %>
+		</p>
+		<% end %>
 	</div>
 	<div id="notificationsFooter">
-		<%= l(:label_alerts) %>
+		<%= link_to l(:label_alerts), alerts_path %>
 	</div>
 </div>
 

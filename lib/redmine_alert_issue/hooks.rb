@@ -2,9 +2,8 @@ module RedmineAlertIssue
   module Hooks
     class ControllerIssuesNewAfterSave < Redmine::Hook::ViewListener
       def controller_issues_new_after_save(context={})
-        issue_id = context[:issue].id
-        issue = Issue.find issue_id
-        issue_status = issue.status.name
+        issue =  context[:issue]
+        issue_status = issue.status_id.to_s
         setting_status = Setting.plugin_redmine_alert_issue['issue_status']
 
         current_time = DateTime.now
@@ -25,7 +24,7 @@ module RedmineAlertIssue
           elsif (next_time > finish_work_time) && (current_wday == 5)
             add_hours = add_hours + 14 + 48
           end
-          AlertWorker.perform_in(current_time + add_hours.hours, issue_id, setting_status)
+          AlertWorker.perform_at( (add_hours * 60 ).minutes.from_now, issue.id, setting_status)
         end
       end
 
