@@ -5,26 +5,9 @@ module RedmineAlertIssue
         issue =  context[:issue]
         issue_status = issue.status_id.to_s
         setting_status = Setting.plugin_redmine_alert_issue['issue_status']
-
         current_time = DateTime.now
-        current_day = current_time.day
-        current_month = current_time.month
-        current_year = current_time.year
-        current_wday = current_time.wday
-        current_zone = current_time.zone
-
-        finish_work_time = DateTime.new(current_year, current_month, current_day, 18, 0, 0)
-        finish_work_time = finish_work_time.change(offset: current_zone)
-
         if issue_status == setting_status
-          add_hours = 2
-          next_time = current_time + 2.hours
-          if (next_time > finish_work_time) && ((1...5).include? current_wday)
-            add_hours = add_hours + 14
-          elsif (next_time > finish_work_time) && (current_wday == 5)
-            add_hours = add_hours + 14 + 48
-          end
-          AlertWorker.perform_at( (add_hours * 60 ).minutes.from_now, issue.id, setting_status)
+          AlertWorker.perform_at( (issue.next_alert(current_time) ), issue.id, setting_status)
         end
       end
 
